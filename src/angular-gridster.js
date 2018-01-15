@@ -2164,7 +2164,15 @@
 		                    }
 		                }
 		            });
-
+		            var sendNotification = true;
+		            var tHandler;
+		            $(window).resize(function() {
+		                sendNotification = false;
+		                clearTimeout(tHandler);
+		                tHandler = setTimeout(function() {
+		                    sendNotification = true;
+		                }, 1000);
+		            })
 		            function positionChanged() {
 		                // call setPosition so the element and gridster controller are updated
 		                item.setPosition(item.row, item.col);
@@ -2175,6 +2183,9 @@
 		                }
 		                if ($getters.col && $getters.col.assign) {
 		                    $getters.col.assign(scope, item.col);
+		                }
+		                if (sendNotification) {
+		                    $rootScope.$broadcast('gridster-transition', item, gridster);
 		                }
 		            }
 		            scope.$watch(function () {
@@ -2194,7 +2205,7 @@
 		                if (changedX || changedY) {
 		                    item.gridster.moveOverlappingItems(item);
 		                    gridster.layoutChanged();
-		                    scope.$broadcast('gridster-item-resized', item);
+		                    //scope.$broadcast('gridster-item-resized', item);
 		                }
 		            }
 
@@ -2206,7 +2217,7 @@
 		            var resizable = new GridsterResizable($el, scope, gridster, item, options);
 
 		            var updateResizable = function () {
-		                resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
+		                //resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
 		            };
 		            updateResizable();
 
