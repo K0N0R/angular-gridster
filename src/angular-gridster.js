@@ -1407,7 +1407,7 @@
 
 		            return bInX || bInY;
 		        }
-
+		        var scrollTop = $('.dashboard').scrollTop();
 		        function mouseDown(e) {
 		            var dragItem = true,
                         target = e.target;
@@ -1427,9 +1427,10 @@
 		                }
 		            });
 		            var t = $timeout(function () {
-                        $(document).off("mouseup.gridsterTimeoutHandler");
+		                $(document).off("mouseup.gridsterTimeoutHandler");
 		                $(e.target).off('mouseleave.gridsterTimeoutHandler');
 		                if (dragItem) {
+		                    scrollTop = $('.dashboard').scrollTop();
 		                    $('.gridster-move-handler').css({
 		                        'box-shadow': 'black 0 0 10px -2px'
 		                    });
@@ -1437,7 +1438,7 @@
 		                    if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
 		                        return false;
 		                    }
-		                    
+
 		                    var $target = angular.element(e.target);
 		                    // custom classes made in tile element which are only allowed to be able to drag element
 
@@ -1482,7 +1483,7 @@
 		                }
 		            }, 250);
 		        }
-
+		        
 		        function mouseMove(e) {
 		            if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
 		                return false;
@@ -1522,6 +1523,14 @@
 		            }
 		            elmX += diffX;
 		            elmY += diffY;
+                    
+                    var scrollMargin = 0;
+		            var newScrollTop = $('.dashboard').scrollTop();
+		            if (newScrollTop != scrollTop) {
+		                scrollMargin = newScrollTop - scrollTop;
+		                scrollTop = newScrollTop;
+		            }
+		            elmY += scrollMargin;
 
 		            // set new position
 		            $el.css({
@@ -1538,7 +1547,7 @@
 		            if (!$el.hasClass('gridster-item-moving') || $el.hasClass('gridster-item-resizing')) {
 		                return false;
 		            }
-
+		            
 		            mOffX = mOffY = 0;
 
 		            dragStop(e);
@@ -2164,7 +2173,15 @@
 		                    }
 		                }
 		            });
-
+		            var sendNotification = true;
+		            var tHandler;
+		            $(window).resize(function() {
+		                sendNotification = false;
+		                clearTimeout(tHandler);
+		                tHandler = setTimeout(function() {
+		                    sendNotification = true;
+		                }, 1000);
+		            })
 		            function positionChanged() {
 		                // call setPosition so the element and gridster controller are updated
 		                item.setPosition(item.row, item.col);
@@ -2175,6 +2192,9 @@
 		                }
 		                if ($getters.col && $getters.col.assign) {
 		                    $getters.col.assign(scope, item.col);
+		                }
+		                if (sendNotification) {
+		                    $rootScope.$broadcast('gridster-transition', item, gridster);
 		                }
 		            }
 		            scope.$watch(function () {
@@ -2194,7 +2214,7 @@
 		                if (changedX || changedY) {
 		                    item.gridster.moveOverlappingItems(item);
 		                    gridster.layoutChanged();
-		                    scope.$broadcast('gridster-item-resized', item);
+		                    //scope.$broadcast('gridster-item-resized', item);
 		                }
 		            }
 
@@ -2206,7 +2226,7 @@
 		            var resizable = new GridsterResizable($el, scope, gridster, item, options);
 
 		            var updateResizable = function () {
-		                resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
+		                //resizable.toggle(!gridster.isMobile && gridster.resizable && gridster.resizable.enabled);
 		            };
 		            updateResizable();
 
