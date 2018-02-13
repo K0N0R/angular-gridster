@@ -1413,33 +1413,32 @@
                         target = e.target;
 		            if (inScrollRange(e.event)) {
 		                dragItem = false;
-		            }
+                    }
+                    $(document).off("mouseup.gridsterTimeoutHandler");
 		            $(document).on("mouseup.gridsterTimeoutHandler", function (e) {
 		                dragItem = false;
 		                $timeout.cancel(t);
 		                $(document).off("mouseup.gridsterTimeoutHandler");
-		            });
-		            $(e.target).on('mouseleave.gridsterTimeoutHandler', function (e) {
+                    });
+                    $(target).off('mouseleave.gridsterTimeoutHandler');
+		            $(target).on('mouseleave.gridsterTimeoutHandler', function (e) {
 		                if (target != e.target) {
 		                    dragItem = false;
 		                    $timeout.cancel(t);
-		                    $(e.target).off('mouseleave.gridsterTimeoutHandler');
+		                    $(target).off('mouseleave.gridsterTimeoutHandler');
 		                }
 		            });
 		            var t = $timeout(function () {
 		                $(document).off("mouseup.gridsterTimeoutHandler");
-		                $(e.target).off('mouseleave.gridsterTimeoutHandler');
+		                $(target).off('mouseleave.gridsterTimeoutHandler');
 		                if (dragItem) {
 		                    scrollTop = $('.dashboard').scrollTop();
-		                    $('.gridster-move-handler').css({
-		                        'box-shadow': 'black 0 0 10px -2px'
-		                    });
-		                    e.target.isDragged = true;
-		                    if (inputTags.indexOf(e.target.nodeName.toLowerCase()) !== -1) {
+                            $('.gridster-move-handler').addClass('--active');
+		                    if (inputTags.indexOf(target.nodeName.toLowerCase()) !== -1) {
 		                        return false;
 		                    }
 
-		                    var $target = angular.element(e.target);
+		                    var $target = angular.element(target);
 		                    // custom classes made in tile element which are only allowed to be able to drag element
 
 		                    // exit, if a resize handle was hit
@@ -1550,11 +1549,8 @@
 		            
 		            mOffX = mOffY = 0;
 
-		            dragStop(e);
-
-		            $('.gridster-move-handler').css({
-		                'box-shadow': 'none'
-		            });
+                    dragStop(e);
+                    $('.gridster-move-handler').removeClass('--active');
 		            return true;
 		        }
 
