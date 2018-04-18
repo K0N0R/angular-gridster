@@ -2179,7 +2179,7 @@
 		                    sendNotification = true;
 		                }, 1000);
 		            });
-		            $scope.$on('$destroy', function() {
+		            scope.$on('$destroy', function() {
 		                $(window).off('resize.gridster');
 		            });
 
