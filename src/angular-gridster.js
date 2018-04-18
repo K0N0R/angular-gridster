@@ -1349,14 +1349,14 @@
 		        var originalCol, originalRow;
 		        var inputTags = ['select', 'input', 'textarea', 'button'];
 
-		        $.fn.hasScroll = function (axis) {
-		            var overflow = this.css("overflow"),
+		        var hasScroll = function (e, axis) {
+		            var overflow = e.css("overflow"),
                         overflowAxis;
 
-		            if (typeof axis == "undefined" || axis == "y") overflowAxis = this.css("overflow-y");
-		            else overflowAxis = this.css("overflow-x");
+		            if (typeof axis == "undefined" || axis == "y") overflowAxis = e.css("overflow-y");
+		            else overflowAxis = e.css("overflow-x");
 
-		            var bShouldScroll = this.get(0).scrollHeight > this.innerHeight();
+		            var bShouldScroll = e.get(0).scrollHeight > e.innerHeight();
 
 		            var bAllowedScroll = (overflow == "auto" || overflow == "visible") ||
                                          (overflowAxis == "auto" || overflowAxis == "visible");
@@ -1376,8 +1376,8 @@
 		            var x = event.pageX,
                         y = event.pageY,
                         e = $(event.target),
-                        hasY = e.hasScroll(),
-                        hasX = e.hasScroll("x"),
+                        hasY = hasScroll(e),
+                        hasX = hasScroll(e, "x"),
                         rX = null,
                         rY = null,
                         bInX = false,
