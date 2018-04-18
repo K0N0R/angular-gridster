@@ -2171,13 +2171,16 @@
 		            });
 		            var sendNotification = true;
 		            var tHandler;
-		            $(window).resize(function() {
+		            $(window).on('resize.gridster', function() {
 		                sendNotification = false;
 		                clearTimeout(tHandler);
 		                tHandler = setTimeout(function() {
 		                    sendNotification = true;
 		                }, 1000);
-		            })
+					});
+					$scope.$on('$destroy', function() {
+						$(window).off('resize.gridster');
+					});
 		            function positionChanged() {
 		                // call setPosition so the element and gridster controller are updated
 		                item.setPosition(item.row, item.col);
