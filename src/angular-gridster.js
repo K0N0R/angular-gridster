@@ -1409,78 +1409,81 @@
 					}
 					var scrollTop = $('.dashboard').scrollTop();
 					function mouseDown(e) {
-						var dragItem = true,
-							target = e.target;
-						if (inScrollRange(e.event)) {
-							dragItem = false;
-						}
-						$(document).off("mouseup.gridsterTimeoutHandler");
-						$(document).on("mouseup.gridsterTimeoutHandler", function (e) {
-							dragItem = false;
-							$timeout.cancel(t);
+						if (e.event.button === 0) {
+							var dragItem = true,
+								target = e.target;
+							if (inScrollRange(e.event)) {
+								dragItem = false;
+							}
 							$(document).off("mouseup.gridsterTimeoutHandler");
-						});
-						$(target).off('mouseleave.gridsterTimeoutHandler');
-						$(target).on('mouseleave.gridsterTimeoutHandler', function (e) {
-							if (target != e.target) {
+							$(document).on("mouseup.gridsterTimeoutHandler", function (e) {
 								dragItem = false;
 								$timeout.cancel(t);
-								$(target).off('mouseleave.gridsterTimeoutHandler');
-							}
-						});
-						var t = $timeout(function () {
-							$(document).off("mouseup.gridsterTimeoutHandler");
+								$(document).off("mouseup.gridsterTimeoutHandler");
+							});
 							$(target).off('mouseleave.gridsterTimeoutHandler');
-							if (dragItem) {
-								scrollTop = $('.dashboard').scrollTop();
-								$('.gridster-move-handler').addClass('--active');
-								if (inputTags.indexOf(target.nodeName.toLowerCase()) !== -1) {
-									return false;
+							$(target).on('mouseleave.gridsterTimeoutHandler', function (e) {
+								if (target != e.target) {
+									dragItem = false;
+									$timeout.cancel(t);
+									$(target).off('mouseleave.gridsterTimeoutHandler');
 								}
+							});
+							var t = $timeout(function () {
+								$(document).off("mouseup.gridsterTimeoutHandler");
+								$(target).off('mouseleave.gridsterTimeoutHandler');
+								if (dragItem) {
+									scrollTop = $('.dashboard').scrollTop();
+									$('.gridster-move-handler').addClass('--active');
+									$(target).closest('.gridster-move-handler').addClass('--clicked');
+									if (inputTags.indexOf(target.nodeName.toLowerCase()) !== -1) {
+										return false;
+									}
 
-								var $target = angular.element(target);
-								// custom classes made in tile element which are only allowed to be able to drag element
+									var $target = angular.element(target);
+									// custom classes made in tile element which are only allowed to be able to drag element
 
-								// exit, if a resize handle was hit
-								if ($target.hasClass('gridster-item-resizable-handler')) {
-									return false;
+									// exit, if a resize handle was hit
+									if ($target.hasClass('gridster-item-resizable-handler')) {
+										return false;
+									}
+									// exit, if the target has it's own click event
+									if ($target.attr('onclick') || $target.attr('ng-click')) {
+										return false;
+									}
+
+									// only works if you have jQuery
+									if ($target.closest && $target.closest('.gridster-no-drag').length) {
+										return false;
+									}
+
+									switch (e.which) {
+										case 1:
+											// left mouse button
+											break;
+										case 2:
+										case 3:
+											// right or middle mouse button
+											return;
+									}
+
+									lastMouseX = e.pageX;
+									lastMouseY = e.pageY;
+
+									elmX = parseInt($el.css('left'), 10);
+									elmY = parseInt($el.css('top'), 10);
+									elmW = $el[0].offsetWidth;
+									elmH = $el[0].offsetHeight;
+
+									originalCol = item.col;
+									originalRow = item.row;
+
+									dragStart(e);
+
+									return true;
 								}
-								// exit, if the target has it's own click event
-								if ($target.attr('onclick') || $target.attr('ng-click')) {
-									return false;
-								}
-
-								// only works if you have jQuery
-								if ($target.closest && $target.closest('.gridster-no-drag').length) {
-									return false;
-								}
-
-								switch (e.which) {
-									case 1:
-										// left mouse button
-										break;
-									case 2:
-									case 3:
-										// right or middle mouse button
-										return;
-								}
-
-								lastMouseX = e.pageX;
-								lastMouseY = e.pageY;
-
-								elmX = parseInt($el.css('left'), 10);
-								elmY = parseInt($el.css('top'), 10);
-								elmW = $el[0].offsetWidth;
-								elmH = $el[0].offsetHeight;
-
-								originalCol = item.col;
-								originalRow = item.row;
-
-								dragStart(e);
-
-								return true;
-							}
-						}, 250);
+							}, 250);
+						}
 					}
 
 					function mouseMove(e) {
@@ -1551,6 +1554,7 @@
 
 						dragStop(e);
 						$('.gridster-move-handler').removeClass('--active');
+						$('.gridster-move-handler').removeClass('--clicked');
 						return true;
 					}
 
